@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -70,9 +73,14 @@ import app.pulse.compose.reordering.rememberReorderingState
 import app.pulse.core.ui.Dimensions
 import app.pulse.core.ui.LocalAppearance
 import app.pulse.core.ui.utils.isLandscape
+import app.pulse.core.ui.utils.px
 import app.pulse.providers.innertube.Innertube
 import app.pulse.providers.innertube.models.bodies.BrowseBody
 import app.pulse.providers.innertube.requests.playlistPage
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.skydoves.cloudy.cloudy
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
@@ -149,15 +157,46 @@ fun LocalPlaylistSongs(
     val (currentMediaId, playing) = playingSong(binder)
 
     Box {
+        if (playlist.thumbnail != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(playlist.thumbnail)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .cloudy(radius = 64.dp.px)
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.4f to Color.Transparent,
+                        0.75f to colorPalette.background0,
+                        1f to colorPalette.background0
+                    )
+                )
+        )
+
         LookaheadScope {
             LazyColumn(
                 state = reorderingState.lazyListState,
                 contentPadding = LocalPlayerAwareWindowInsets.current
                     .only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
                     .asPaddingValues(),
-                modifier = Modifier
-                    .background(colorPalette.background0)
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 item(
                     key = "header",
