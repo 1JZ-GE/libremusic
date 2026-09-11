@@ -196,10 +196,83 @@ fun LocalPlaylistSongs(
                         }
                     }
                 )
-                IconButton(
-                    icon = R.drawable.ellipsis_horizontal,
-                    onClick = { isMenuVisible = !isMenuVisible }
-                )
+                Box {
+                    IconButton(
+                        icon = R.drawable.ellipsis_horizontal,
+                        onClick = { isMenuVisible = !isMenuVisible }
+                    )
+
+                    Box(modifier = Modifier.align(Alignment.BottomEnd)) {
+                        NewMenu(
+                            visible = isMenuVisible,
+                            onDismiss = { isMenuVisible = false }
+                        ) {
+                            playlist.browseId?.let { browseId ->
+                                NewMenuEntry(
+                                    icon = R.drawable.sync,
+                                    text = stringResource(R.string.sync),
+                                    enabled = !loading,
+                                    onClick = {
+                                        isMenuVisible = false
+                                        coroutineScope.launch {
+                                            loading = true
+                                            sync(playlist, browseId)
+                                            loading = false
+                                        }
+                                    }
+                                )
+
+                                songs.firstOrNull()?.let { firstSong ->
+                                    NewMenuEntry(
+                                        icon = R.drawable.play,
+                                        text = stringResource(R.string.watch_playlist_on_youtube),
+                                        onClick = {
+                                            isMenuVisible = false
+                                            binder?.player?.pause()
+                                            uriHandler.openUri(
+                                                "https://youtube.com/watch?v=${firstSong.id}&list=${browseId.drop(2)}"
+                                            )
+                                        }
+                                    )
+
+                                    NewMenuEntry(
+                                        icon = R.drawable.musical_notes,
+                                        text = stringResource(R.string.open_in_youtube_music),
+                                        onClick = {
+                                            isMenuVisible = false
+                                            binder?.player?.pause()
+                                            if (!launchYouTubeMusic(
+                                                    context = context,
+                                                    endpoint = "watch?v=${firstSong.id}&list=${browseId.drop(2)}"
+                                                )
+                                            ) {
+                                                context.toast(youtubeMusicNotInstalledMessage)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            NewMenuEntry(
+                                icon = R.drawable.pencil,
+                                text = stringResource(R.string.rename),
+                                onClick = {
+                                    isMenuVisible = false
+                                    isRenaming = true
+                                }
+                            )
+
+                            NewMenuEntry(
+                                icon = R.drawable.trash,
+                                text = stringResource(R.string.delete),
+                                onClick = {
+                                    isMenuVisible = false
+                                    isDeleting = true
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     ) {
@@ -386,75 +459,6 @@ fun LocalPlaylistSongs(
                     )
                 }
             }
-        }
-
-        NewMenu(
-            visible = isMenuVisible,
-            onDismiss = { isMenuVisible = false }
-        ) {
-            playlist.browseId?.let { browseId ->
-                NewMenuEntry(
-                    icon = R.drawable.sync,
-                    text = stringResource(R.string.sync),
-                    enabled = !loading,
-                    onClick = {
-                        isMenuVisible = false
-                        coroutineScope.launch {
-                            loading = true
-                            sync(playlist, browseId)
-                            loading = false
-                        }
-                    }
-                )
-
-                songs.firstOrNull()?.let { firstSong ->
-                    NewMenuEntry(
-                        icon = R.drawable.play,
-                        text = stringResource(R.string.watch_playlist_on_youtube),
-                        onClick = {
-                            isMenuVisible = false
-                            binder?.player?.pause()
-                            uriHandler.openUri(
-                                "https://youtube.com/watch?v=${firstSong.id}&list=${browseId.drop(2)}"
-                            )
-                        }
-                    )
-
-                    NewMenuEntry(
-                        icon = R.drawable.musical_notes,
-                        text = stringResource(R.string.open_in_youtube_music),
-                        onClick = {
-                            isMenuVisible = false
-                            binder?.player?.pause()
-                            if (!launchYouTubeMusic(
-                                    context = context,
-                                    endpoint = "watch?v=${firstSong.id}&list=${browseId.drop(2)}"
-                                )
-                            ) {
-                                context.toast(youtubeMusicNotInstalledMessage)
-                            }
-                        }
-                    )
-                }
-            }
-
-            NewMenuEntry(
-                icon = R.drawable.pencil,
-                text = stringResource(R.string.rename),
-                onClick = {
-                    isMenuVisible = false
-                    isRenaming = true
-                }
-            )
-
-            NewMenuEntry(
-                icon = R.drawable.trash,
-                text = stringResource(R.string.delete),
-                onClick = {
-                    isMenuVisible = false
-                    isDeleting = true
-                }
-            )
         }
 
         FloatingActionsContainerWithScrollToTop(

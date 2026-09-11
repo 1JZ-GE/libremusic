@@ -183,10 +183,28 @@ fun PlaylistSongList(
                         context.startActivity(Intent.createChooser(sendIntent, null))
                     }
                 )
-                IconButton(
-                    icon = R.drawable.ellipsis_horizontal,
-                    onClick = { isMenuVisible = !isMenuVisible }
-                )
+                Box {
+                    IconButton(
+                        icon = R.drawable.ellipsis_horizontal,
+                        onClick = { isMenuVisible = !isMenuVisible }
+                    )
+
+                    Box(modifier = Modifier.align(Alignment.BottomEnd)) {
+                        NewMenu(
+                            visible = isMenuVisible,
+                            onDismiss = { isMenuVisible = false }
+                        ) {
+                            NewMenuEntry(
+                                icon = R.drawable.add,
+                                text = stringResource(R.string.import_playlist),
+                                onClick = {
+                                    isMenuVisible = false
+                                    isImportingPlaylist = true
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     ) {
@@ -392,20 +410,6 @@ fun PlaylistSongList(
                     }
                 }
             }
-        }
-
-        NewMenu(
-            visible = isMenuVisible,
-            onDismiss = { isMenuVisible = false }
-        ) {
-            NewMenuEntry(
-                icon = R.drawable.add,
-                text = stringResource(R.string.import_playlist),
-                onClick = {
-                    isMenuVisible = false
-                    isImportingPlaylist = true
-                }
-            )
         }
 
         FloatingActionsContainerWithScrollToTop(
