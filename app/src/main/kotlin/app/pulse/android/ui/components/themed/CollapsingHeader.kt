@@ -30,7 +30,7 @@ import app.pulse.android.utils.medium
 import app.pulse.core.ui.LocalAppearance
 
 
-val CollapsingHeaderContentSpacer: Dp = 96.dp
+val CollapsingHeaderContentSpacer: Dp = 72.dp
 
 @Composable
 fun CollapsingHeader(
