@@ -79,6 +79,7 @@
     <string name="enter_playlist_name_prompt">Enter the playlist name</string>
     <string name="new_playlist">New playlist</string>
     <string name="add_to_playlist">Add to playlist</string>
+    <string name="import_playlist">Import playlist</string>
     <string name="go_to_album">Go to album</string>
     <string name="watch_on_youtube">Watch on YouTube</string>
     <string name="open_in_youtube_music">Open in YouTube Music</string>

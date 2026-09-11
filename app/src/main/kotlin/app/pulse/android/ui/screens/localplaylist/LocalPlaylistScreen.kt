@@ -3,7 +3,6 @@ package app.pulse.android.ui.screens.localplaylist
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import app.pulse.android.Database
@@ -11,7 +10,6 @@ import app.pulse.android.R
 import app.pulse.android.models.Playlist
 import app.pulse.core.data.models.Song
 import app.pulse.android.ui.components.themed.Scaffold
-import app.pulse.android.ui.components.themed.adaptiveThumbnailContent
 import app.pulse.android.ui.screens.GlobalRoutes
 import app.pulse.android.ui.screens.Route
 import app.pulse.compose.persist.PersistMapCleanup
@@ -51,15 +49,6 @@ fun LocalPlaylistScreen(playlistId: Long) {
                     .collect { songs = it.toImmutableList() }
             }
 
-            val thumbnailContent = remember(playlist) {
-                playlist?.thumbnail?.let { url ->
-                    adaptiveThumbnailContent(
-                        isLoading = false,
-                        url = url
-                    )
-                } ?: { }
-            }
-
             Scaffold(
                 key = "localplaylist",
                 topIconButtonId = R.drawable.chevron_back,
@@ -76,7 +65,6 @@ fun LocalPlaylistScreen(playlistId: Long) {
                             0 -> LocalPlaylistSongs(
                                 playlist = it,
                                 songs = songs,
-                                thumbnailContent = thumbnailContent,
                                 onDelete = pop
                             )
                         }
