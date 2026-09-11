@@ -122,8 +122,8 @@ private fun CollapsingHeaderInternal(
     val (colorPalette, typography) = LocalAppearance.current
     val density = LocalDensity.current
 
-    val expandedHeight = 120.dp
-    val collapsedHeight = 72.dp
+    val expandedHeight = 72.dp
+    val collapsedHeight = 62.dp
     val collapseThresholdPx = with(density) { expandedHeight.toPx() }
 
     val collapseProgress = (scrollPixels / collapseThresholdPx).coerceIn(0f, 1f)
