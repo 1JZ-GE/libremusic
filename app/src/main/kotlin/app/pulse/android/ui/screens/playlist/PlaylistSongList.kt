@@ -46,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.statusBarsPadding
 import app.pulse.android.Database
 import app.pulse.android.LocalPlayerAwareWindowInsets
 import app.pulse.android.LocalPlayerServiceBinder
@@ -60,6 +59,7 @@ import app.pulse.android.ui.components.NewMenu
 import app.pulse.android.ui.components.NewMenuEntry
 import app.pulse.android.ui.components.ShimmerHost
 import app.pulse.android.ui.components.themed.FloatingActionsContainerWithScrollToTop
+import app.pulse.android.ui.components.themed.CollapsingHeader
 import app.pulse.android.ui.components.themed.HeaderCircleIconButton
 import app.pulse.android.ui.components.themed.HeaderPillRow
 import app.pulse.android.ui.components.themed.IconButton
@@ -165,7 +165,32 @@ fun PlaylistSongList(
 
     val lazyListState = rememberLazyListState()
 
-    Box(modifier = modifier) {
+    CollapsingHeader(
+        title = playlistPage?.title ?: stringResource(R.string.unknown),
+        lazyListState = lazyListState,
+        headerActions = {
+            HeaderPillRow(modifier = Modifier.padding(end = 8.dp)) {
+                IconButton(
+                    icon = R.drawable.share_social,
+                    onClick = {
+                        val url = playlistPage?.url
+                            ?: "https://music.youtube.com/playlist?list=${browseId.removePrefix("VL")}"
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, url)
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, null))
+                    }
+                )
+                IconButton(
+                    icon = R.drawable.ellipsis_horizontal,
+                    onClick = { isMenuVisible = !isMenuVisible }
+                )
+            }
+        }
+    ) {
+        Box(modifier = modifier) {
         if (playlistPage?.thumbnail?.url != null) {
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -369,31 +394,6 @@ fun PlaylistSongList(
             }
         }
 
-        HeaderPillRow(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .statusBarsPadding()
-                .padding(top = 8.dp, end = 16.dp)
-        ) {
-            IconButton(
-                icon = R.drawable.share_social,
-                onClick = {
-                    val url = playlistPage?.url
-                        ?: "https://music.youtube.com/playlist?list=${browseId.removePrefix("VL")}"
-                    val sendIntent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, url)
-                    }
-                    context.startActivity(Intent.createChooser(sendIntent, null))
-                }
-            )
-            IconButton(
-                icon = R.drawable.ellipsis_horizontal,
-                onClick = { isMenuVisible = !isMenuVisible }
-            )
-        }
-
         NewMenu(
             visible = isMenuVisible,
             onDismiss = { isMenuVisible = false }
@@ -411,5 +411,6 @@ fun PlaylistSongList(
         FloatingActionsContainerWithScrollToTop(
             lazyListState = lazyListState
         )
+        }
     }
 }
