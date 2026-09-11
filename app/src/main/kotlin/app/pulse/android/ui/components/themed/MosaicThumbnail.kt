@@ -81,7 +81,8 @@ fun MosaicThumbnail(
 fun QuadrantTint(
     urls: List<String>,
     modifier: Modifier = Modifier,
-    tintAlpha: Float = 0.85f
+    tintAlpha: Float = 0.85f,
+    onColorExtracted: (Color) -> Unit = {}
 ) {
     val colorPalette = LocalAppearance.current.colorPalette
     val context = LocalContext.current
@@ -121,6 +122,8 @@ fun QuadrantTint(
             Triple(acc.first + col.red, acc.second + col.green, acc.third + col.blue)
         }.let { (r, g, b) -> Color(r / count, g / count, b / count, 1f) }
     }
+
+    LaunchedEffect(avgColor) { onColorExtracted(avgColor) }
 
     BoxWithConstraints(modifier = modifier) {
         val w = with(LocalDensity.current) { maxWidth.toPx() }

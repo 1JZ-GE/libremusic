@@ -3,6 +3,7 @@ package app.pulse.android.ui.components.themed
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.pulse.android.R
 import app.pulse.compose.reordering.ReorderingState
@@ -13,10 +14,11 @@ import app.pulse.core.ui.LocalAppearance
 fun ReorderHandle(
     reorderingState: ReorderingState,
     index: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = LocalAppearance.current.colorPalette.textDisabled
 ) = IconButton(
     icon = R.drawable.reorder,
-    color = LocalAppearance.current.colorPalette.textDisabled,
+    color = color,
     indication = null,
     onClick = {},
     modifier = modifier

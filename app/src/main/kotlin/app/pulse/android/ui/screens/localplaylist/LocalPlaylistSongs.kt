@@ -80,7 +80,6 @@ import app.pulse.android.utils.forcePlayFromBeginning
 import app.pulse.android.utils.launchYouTubeMusic
 import app.pulse.android.utils.medium
 import app.pulse.android.utils.playingSong
-import app.pulse.android.utils.secondary
 import app.pulse.android.utils.semiBold
 import app.pulse.android.utils.toast
 import app.pulse.compose.reordering.animateItemPlacement
@@ -170,11 +169,13 @@ fun LocalPlaylistSongs(
         songs.mapNotNull { it.thumbnailUrl?.takeIf { u -> u.isNotEmpty() } }.take(4)
     }
 
+    var tintColor by remember { mutableStateOf(colorPalette.accent) }
+
     CollapsingHeader(
         title = playlist.name,
         lazyListState = reorderingState.lazyListState,
         headerActions = {
-            HeaderPillRow(modifier = Modifier.padding(end = 8.dp)) {
+            HeaderPillRow(containerColor = tintColor, modifier = Modifier.padding(end = 8.dp)) {
                 IconButton(
                     icon = R.drawable.share_social,
                     onClick = {
@@ -200,7 +201,8 @@ fun LocalPlaylistSongs(
                     Box(modifier = Modifier.align(Alignment.BottomEnd)) {
                         NewMenu(
                             visible = isMenuVisible,
-                            onDismiss = { isMenuVisible = false }
+                            onDismiss = { isMenuVisible = false },
+                            containerColor = tintColor
                         ) {
                             playlist.browseId?.let { browseId ->
                                 NewMenuEntry(
@@ -311,6 +313,7 @@ Box(modifier = modifier) {
                         ) {
                             if (mosaicUrls.isNotEmpty()) QuadrantTint(
                                 urls = mosaicUrls,
+                                onColorExtracted = { tintColor = it },
                                 modifier = Modifier
                                     .fillMaxSize()
 .graphicsLayer {
@@ -347,7 +350,7 @@ Box(modifier = modifier) {
                                 songs.size,
                                 songs.size
                             ),
-                            style = typography.s.medium.secondary,
+                            style = typography.s.medium.copy(color = tintColor.copy(alpha = 0.7f)),
                             modifier = Modifier.padding(top = 4.dp)
                         )
 
@@ -362,6 +365,7 @@ Box(modifier = modifier) {
 
                             HeaderCircleIconButton(
                                 icon = R.drawable.shuffle,
+                                containerColor = tintColor,
                                 enabled = songs.isNotEmpty(),
                                 onClick = {
                                     binder?.stopRadio()
@@ -377,7 +381,7 @@ Box(modifier = modifier) {
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(percent = 50))
-                                    .background(colorPalette.accent)
+                                    .background(tintColor)
                                     .clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = null,
@@ -403,6 +407,7 @@ Box(modifier = modifier) {
 
                             HeaderCircleIconButton(
                                 icon = R.drawable.add,
+                                containerColor = tintColor,
                                 onClick = {
                                     // ponytail: add-to-playlist flow — stub, wire when function phase starts
                                 }
@@ -449,7 +454,8 @@ Box(modifier = modifier) {
                         trailingContent = {
                             ReorderHandle(
                                 reorderingState = reorderingState,
-                                index = index
+                                index = index,
+                                color = tintColor
                             )
                         },
                         clip = !reorderingState.isDragging,

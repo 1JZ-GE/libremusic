@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
@@ -58,6 +59,7 @@ fun NewMenu(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = DefaultMenuShape,
+    containerColor: Color = LocalAppearance.current.colorPalette.background1,
     content: @Composable () -> Unit
 ) {
     val transitionState = remember { MutableTransitionState(false) }
@@ -95,7 +97,7 @@ fun NewMenu(
                     .width(IntrinsicSize.Min)
                     .widthIn(min = 250.dp, max = 340.dp)
                     .clip(shape)
-                    .background(colorPalette.background1)
+                    .background(containerColor)
             ) {
                 content()
             }

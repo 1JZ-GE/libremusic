@@ -74,7 +74,6 @@ import app.pulse.android.utils.forcePlayAtIndex
 import app.pulse.android.utils.forcePlayFromBeginning
 import app.pulse.android.utils.medium
 import app.pulse.android.utils.playingSong
-import app.pulse.android.utils.secondary
 import app.pulse.android.utils.semiBold
 import app.pulse.compose.persist.persist
 import app.pulse.core.ui.Dimensions
@@ -165,13 +164,15 @@ fun PlaylistSongList(
 
     val (currentMediaId, playing) = playingSong(binder)
 
+    var tintColor by remember { mutableStateOf(colorPalette.accent) }
+
     val lazyListState = rememberLazyListState()
 
     CollapsingHeader(
         title = playlistPage?.title ?: stringResource(R.string.unknown),
         lazyListState = lazyListState,
         headerActions = {
-            HeaderPillRow(modifier = Modifier.padding(end = 8.dp)) {
+            HeaderPillRow(containerColor = tintColor, modifier = Modifier.padding(end = 8.dp)) {
                 IconButton(
                     icon = R.drawable.share_social,
                     onClick = {
@@ -194,7 +195,8 @@ fun PlaylistSongList(
                     Box(modifier = Modifier.align(Alignment.BottomEnd)) {
                         NewMenu(
                             visible = isMenuVisible,
-                            onDismiss = { isMenuVisible = false }
+                            onDismiss = { isMenuVisible = false },
+                            containerColor = tintColor
                         ) {
                             NewMenuEntry(
                                 icon = R.drawable.add,
@@ -265,6 +267,7 @@ fun PlaylistSongList(
                         ) {
                             if (mosaicUrls.isNotEmpty()) QuadrantTint(
                                 urls = mosaicUrls,
+                                onColorExtracted = { tintColor = it },
                                 modifier = Modifier
                                     .fillMaxSize()
 .graphicsLayer {
@@ -301,7 +304,7 @@ fun PlaylistSongList(
                                 songs?.size ?: 0,
                                 songs?.size ?: 0
                             ),
-                            style = typography.s.medium.secondary,
+                            style = typography.s.medium.copy(color = tintColor.copy(alpha = 0.7f)),
                             modifier = Modifier.padding(top = 4.dp)
                         )
 
@@ -316,6 +319,7 @@ fun PlaylistSongList(
 
                             HeaderCircleIconButton(
                                 icon = R.drawable.shuffle,
+                                containerColor = tintColor,
                                 enabled = mediaItems?.isNotEmpty() == true,
                                 onClick = {
                                     mediaItems?.let { items ->
@@ -335,7 +339,7 @@ fun PlaylistSongList(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(percent = 50))
-                                    .background(colorPalette.accent)
+                                    .background(tintColor)
                                     .clickable(
                                         interactionSource = remember { MutableInteractionSource() },
                                         indication = null,
@@ -365,6 +369,7 @@ fun PlaylistSongList(
 
                             HeaderCircleIconButton(
                                 icon = R.drawable.add,
+                                containerColor = tintColor,
                                 onClick = { isImportingPlaylist = true }
                             )
 

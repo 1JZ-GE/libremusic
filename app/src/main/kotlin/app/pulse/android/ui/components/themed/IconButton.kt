@@ -71,13 +71,14 @@ fun HeaderIconButton(
 @Composable
 fun HeaderPillRow(
     modifier: Modifier = Modifier,
+    containerColor: Color = LocalAppearance.current.colorPalette.background2,
     content: @Composable RowScope.() -> Unit
 ) {
     val (colorPalette, _) = LocalAppearance.current
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(percent = 50))
-            .background(colorPalette.background2)
+            .background(containerColor)
             .border(0.5.dp, colorPalette.textSecondary.copy(alpha = 0.35f), RoundedCornerShape(percent = 50))
             .padding(horizontal = 10.dp, vertical = 5.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -92,13 +93,14 @@ fun HeaderCircleIconButton(
     @DrawableRes icon: Int,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    containerColor: Color = LocalAppearance.current.colorPalette.background1
 ) {
     val (colorPalette) = LocalAppearance.current
     Box(
         modifier = modifier
             .size(42.dp)
             .clip(CircleShape)
-            .background(colorPalette.background1)
+            .background(containerColor)
             .clickable(
                 enabled = enabled,
                 onClick = onClick,
