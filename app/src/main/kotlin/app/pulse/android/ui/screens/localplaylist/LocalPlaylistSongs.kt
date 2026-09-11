@@ -303,7 +303,7 @@ Box(modifier = modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 96.dp, bottom = 24.dp)
+                            .padding(top = 120.dp, bottom = 24.dp)
                     ) {
                         Box(
                             modifier = Modifier

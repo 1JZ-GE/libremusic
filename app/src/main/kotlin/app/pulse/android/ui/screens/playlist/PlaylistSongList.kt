@@ -242,7 +242,7 @@ fun PlaylistSongList(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 96.dp, bottom = 24.dp)
+                            .padding(top = 128.dp, bottom = 24.dp)
                             .shimmer()
                     ) {
                         Box(
@@ -257,7 +257,7 @@ fun PlaylistSongList(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 96.dp, bottom = 24.dp)
+                            .padding(top = 120.dp, bottom = 24.dp)
                     ) {
                         Box(
                             modifier = Modifier
