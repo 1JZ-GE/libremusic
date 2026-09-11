@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -63,6 +62,8 @@ import app.pulse.android.ui.components.themed.CollapsingHeader
 import app.pulse.android.ui.components.themed.HeaderCircleIconButton
 import app.pulse.android.ui.components.themed.HeaderPillRow
 import app.pulse.android.ui.components.themed.IconButton
+import app.pulse.android.ui.components.themed.MosaicThumbnail
+import app.pulse.android.ui.components.themed.QuadrantTint
 import app.pulse.android.ui.components.themed.NonQueuedMediaItemMenu
 import app.pulse.android.ui.components.themed.TextFieldDialog
 import app.pulse.android.ui.items.SongItem
@@ -75,19 +76,13 @@ import app.pulse.android.utils.medium
 import app.pulse.android.utils.playingSong
 import app.pulse.android.utils.secondary
 import app.pulse.android.utils.semiBold
-import app.pulse.android.utils.thumbnail
 import app.pulse.compose.persist.persist
 import app.pulse.core.ui.Dimensions
 import app.pulse.core.ui.LocalAppearance
 import app.pulse.core.ui.shimmer
-import app.pulse.core.ui.utils.px
 import app.pulse.providers.innertube.Innertube
 import app.pulse.providers.innertube.models.bodies.BrowseBody
 import app.pulse.providers.innertube.requests.playlistPage
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.skydoves.cloudy.cloudy
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -161,6 +156,13 @@ fun PlaylistSongList(
     val songs = playlistPage?.songsPage?.items
     val mediaItems = songs?.map { it.asMediaItem }
 
+    val mosaicUrls = remember(songs, playlistPage?.thumbnail?.url) {
+        (
+            songs?.mapNotNull { it.thumbnail?.url?.takeIf { u -> u.isNotEmpty() } } ?: emptyList()
+            ).ifEmpty { listOfNotNull(playlistPage?.thumbnail?.url) }
+            .take(4)
+    }
+
     val (currentMediaId, playing) = playingSong(binder)
 
     val lazyListState = rememberLazyListState()
@@ -209,26 +211,6 @@ fun PlaylistSongList(
         }
     ) {
         Box(modifier = modifier) {
-        if (playlistPage?.thumbnail?.url != null) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(playlistPage?.thumbnail?.url)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .cloudy(radius = 64.dp.px)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.8f))
-        )
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -275,20 +257,34 @@ fun PlaylistSongList(
                             .fillMaxWidth()
                             .padding(top = 96.dp, bottom = 24.dp)
                     ) {
-                        AsyncImage(
-                            model = playlistPage?.thumbnail?.url?.thumbnail(512),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f)
-                                .aspectRatio(1f)
-                                .graphicsLayer {
-                                    shape = HeroShape
-                                    shadowElevation = 8.dp.toPx()
-                                    clip = false
-                                }
-                                .clip(HeroShape)
-                        )
+                                .aspectRatio(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (mosaicUrls.isNotEmpty()) QuadrantTint(
+                                urls = mosaicUrls,
+                                modifier = Modifier
+                                    .fillMaxSize()
+.graphicsLayer {
+                                        scaleX = 2f
+                                        scaleY = 4f
+                                        clip = false
+                                    }
+                            )
+                            MosaicThumbnail(
+                                urls = mosaicUrls,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        shape = HeroShape
+                                        shadowElevation = 8.dp.toPx()
+                                        clip = false
+                                    }
+                                    .clip(HeroShape)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 

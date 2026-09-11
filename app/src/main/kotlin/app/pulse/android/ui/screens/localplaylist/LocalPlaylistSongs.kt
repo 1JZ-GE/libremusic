@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -68,6 +67,8 @@ import app.pulse.android.ui.components.themed.FloatingActionsContainerWithScroll
 import app.pulse.android.ui.components.themed.HeaderCircleIconButton
 import app.pulse.android.ui.components.themed.HeaderPillRow
 import app.pulse.android.ui.components.themed.IconButton
+import app.pulse.android.ui.components.themed.MosaicThumbnail
+import app.pulse.android.ui.components.themed.QuadrantTint
 import app.pulse.android.ui.components.themed.InPlaylistMediaItemMenu
 import app.pulse.android.ui.components.themed.ReorderHandle
 import app.pulse.android.ui.components.themed.TextFieldDialog
@@ -81,21 +82,15 @@ import app.pulse.android.utils.medium
 import app.pulse.android.utils.playingSong
 import app.pulse.android.utils.secondary
 import app.pulse.android.utils.semiBold
-import app.pulse.android.utils.thumbnail
 import app.pulse.android.utils.toast
 import app.pulse.compose.reordering.animateItemPlacement
 import app.pulse.compose.reordering.draggedItem
 import app.pulse.compose.reordering.rememberReorderingState
 import app.pulse.core.ui.Dimensions
 import app.pulse.core.ui.LocalAppearance
-import app.pulse.core.ui.utils.px
 import app.pulse.providers.innertube.Innertube
 import app.pulse.providers.innertube.models.bodies.BrowseBody
 import app.pulse.providers.innertube.requests.playlistPage
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.skydoves.cloudy.cloudy
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -276,20 +271,7 @@ fun LocalPlaylistSongs(
             }
         }
     ) {
-        Box(modifier = modifier) {
-            MosaicThumbnail(
-            urls = mosaicUrls,
-            modifier = Modifier
-                .fillMaxSize()
-                .cloudy(radius = 64.dp.px)
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.8f))
-        )
-
+Box(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -321,18 +303,34 @@ fun LocalPlaylistSongs(
                             .fillMaxWidth()
                             .padding(top = 96.dp, bottom = 24.dp)
                     ) {
-                        MosaicThumbnail(
-                            urls = mosaicUrls,
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f)
-                                .aspectRatio(1f)
-                                .graphicsLayer {
-                                    shape = HeroShape
-                                    shadowElevation = 8.dp.toPx()
-                                    clip = false
-                                }
-                                .clip(HeroShape)
-                        )
+                                .aspectRatio(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (mosaicUrls.isNotEmpty()) QuadrantTint(
+                                urls = mosaicUrls,
+                                modifier = Modifier
+                                    .fillMaxSize()
+.graphicsLayer {
+                                        scaleX = 2f
+                                        scaleY = 4f
+                                        clip = false
+                                    }
+                            )
+                            MosaicThumbnail(
+                                urls = mosaicUrls,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        shape = HeroShape
+                                        shadowElevation = 8.dp.toPx()
+                                        clip = false
+                                    }
+                                    .clip(HeroShape)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -465,39 +463,6 @@ fun LocalPlaylistSongs(
             lazyListState = lazyListState,
             visible = !reorderingState.isDragging
         )
-        }
-    }
-}
-
-@Composable
-private fun MosaicThumbnail(
-    urls: List<String>,
-    modifier: Modifier = Modifier
-) = if (urls.size == 1) {
-    AsyncImage(
-        model = urls.first().thumbnail(512),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-    )
-} else {
-    Box(modifier = modifier) {
-        listOf(
-            Alignment.TopStart,
-            Alignment.TopEnd,
-            Alignment.BottomStart,
-            Alignment.BottomEnd
-        ).forEachIndexed { index, alignment ->
-            urls.getOrNull(index)?.let { url ->
-                AsyncImage(
-                    model = url.thumbnail(256),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .align(alignment)
-                        .fillMaxSize(0.5f)
-                )
-            }
         }
     }
 }
